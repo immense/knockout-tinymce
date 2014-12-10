@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
+  <title>Knockout TinyMCE</title>
+  <link rel='stylesheet' type='text/css' href='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css'>
+  <link rel="stylesheet" type='text/css' href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+  <script src='http://code.jquery.com/jquery-2.1.1.min.js'></script>
+  <script src='http://cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js'></script>
+
+  <script src='demo/tinymce/tinymce.js'></script>
+  <script src='knockout-tinymce.min.js'></script>
+
+  <script type='text/javascript'>
+    $(function() {
+
+      window.view1 = {
+        string_of_html: ko.observable()
+      };
+
+      ko.applyBindings(view1, $('#simple-example-section .result')[0]);
+    });
+  </script>
+</head>
+<body>
+  <div class='container'>
+    <div class='header'>
+      <ul class='nav nav-pills pull-right'>
+        <li class='active'><a href="#">Demo</a></li>
+        <li><a href='https://github.com/immense/knockout-tinymce'>Code</a></li>
+      </ul>
+      <h3 class='text-muted'>Knockout TinyMCE</h3>
+    </div>
+    <div class='jumbotron'>
+      <h1>Knockout TinyMCE Demo</h1>
+    </div>
+    <div class='row'>
+      <div class='col-md-12'>
+
+        <h2><a href="#simple-example" name="simple-example">&sect;</a> Simple example</h2>
+        <section id="simple-example-section">
+          <p>Use the <code>tinymce</code> binding on any <code>textarea</code> element.</p>
+
+          <label>View Model:</label>
+          <pre>
+            window.view1 = {
+              string_of_html: ko.observable()
+            };
+
+            ko.applyBindings(view1, $('#simple-example-section .result')[0]);
+          </pre>
+
+          <label>Markup:</label>
+          <pre>
+            &lt;textarea data-bind='tinymce: string_of_html'&gt;
+            &lt;p&gt;
+              &lt;strong&gt;Value:&lt;/strong&gt;
+              &lt;span data-bind='text: string_of_html'&gt;&lt;/span&gt;
+            &lt;/p&gt;
+          </pre>
+
+          <h3>Result:</h3>
+          <section class="result">
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label for="string-of-html" class="control-label col-sm-2">String of HTML</label>
+                <div class="col-sm-10">
+                  <textarea id='string-of-html' class='form-control' data-bind="tinymce: string_of_html"></textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-2">Value</label>
+                <div class="col-sm-10">
+                  <p class="form-control-static" data-bind="text: string_of_html"></p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-2">Value (as html)</label>
+                <div class="col-sm-10">
+                  <p class="form-control-static" data-bind="html: string_of_html"></p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+      </div>
+    </div>
+    <div class='footer'>
+      <p>&copy; Immense Networks 2014</p>
+    </div>
+  </div>
+</body>
+</html>

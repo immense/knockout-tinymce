@@ -1,0 +1,13 @@
+{
+  "name": "knockout-tinymce",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "compile": "grunt"
+  },
+  "devDependencies": {
+    "grunt": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-coffee": "*"
+  }
+}

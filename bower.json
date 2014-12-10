@@ -1,0 +1,29 @@
+{
+  "name": "knockout-pickadate-tinymce",
+  "version": "0.1.0",
+  "homepage": "https://github.com/immense/knockout-tinymce",
+  "authors": [
+    "Christian Bankester <cbankester@immense.net>"
+  ],
+  "description": "TinyMCE binding for Knockout.js",
+  "main": "knockout-tinymce.min.js",
+  "keywords": [
+    "knockout",
+    "tinymce"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "demo",
+    "demo.html",
+    "Gruntfile.coffee",
+    "package.json",
+    "README.md",
+    "knockout-tinymce.coffee",
+    "bower.json",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
