@@ -18,8 +18,9 @@
           $(element).tinymce(settings);
         }), 0);
         ko.utils["domNodeDisposal"].addDisposeCallback(element, function() {
-          var tinymce = $(element).tinymce();
-          if(tinymce){
+          var tinymce;
+          tinymce = $(element).tinymce();
+          if (tinymce) {
             tinymce.remove();
           }
         });

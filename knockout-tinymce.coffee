@@ -27,7 +27,8 @@
 
       # To prevent a memory leak, ensure that the underlying element's disposal destroys it's associated editor.
       ko.utils["domNodeDisposal"].addDisposeCallback element, ->
-        $(element).tinymce().remove()
+        tinymce = $(element).tinymce()
+        tinymce.remove() if tinymce
         return
 
       controlsDescendantBindings: true
