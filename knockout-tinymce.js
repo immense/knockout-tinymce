@@ -13,7 +13,7 @@
         options = (allBindings.has("tinymceConfig") ? allBindings.get("tinymceConfig") : null);
         ext = (allBindings.has("tinymceExtensions") ? allBindings.get("tinymceExtensions") : []);
         settings = configure(binding["defaults"], ext, options, arguments);
-        $(element).text(valueAccessor()());
+        $(element)[$(element).is('input, textarea') ? 'text' : 'html'](valueAccessor()());
         setTimeout((function() {
           $(element).tinymce(settings);
         }), 0);
