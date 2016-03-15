@@ -17,7 +17,7 @@
       settings = configure(binding["defaults"], ext, options, arguments)
 
       # Ensure the valueAccessor's value has been applied to the underlying element, before instanciating the tinymce plugin
-      $(element).text valueAccessor()()
+      $(element)[if $(element).is('input, textarea') then 'text' else 'html'] valueAccessor()()
 
       # Defer TinyMCE instantiation
       setTimeout (->
