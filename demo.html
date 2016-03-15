@@ -15,12 +15,19 @@
 
   <script type='text/javascript'>
     $(function() {
-
+      // Example 1
       window.view1 = {
         string_of_html: ko.observable()
       };
 
-      ko.applyBindings(view1, $('#simple-example-section .result')[0]);
+      ko.applyBindings(view1, document.querySelector('#simple-example-result'));
+
+      // Example 2
+      window.view2 = {
+        string_of_html: ko.observable("<strong>click on me!</strong>")
+      };
+
+      ko.applyBindings(view2, document.querySelector('#options-example-result'));
     });
   </script>
 </head>
@@ -44,41 +51,74 @@
           <p>Use the <code>tinymce</code> binding on any <code>textarea</code> element.</p>
 
           <label>View Model:</label>
-          <pre>
-            window.view1 = {
-              string_of_html: ko.observable()
-            };
+          <pre>window.view1 = {
+  string_of_html: ko.observable()
+};
 
-            ko.applyBindings(view1, $('#simple-example-section .result')[0]);
-          </pre>
+ko.applyBindings(view1, document.querySelector('#simple-example-result'));</pre>
 
           <label>Markup:</label>
-          <pre>
-            &lt;textarea data-bind='tinymce: string_of_html'&gt;
-            &lt;p&gt;
-              &lt;strong&gt;Value:&lt;/strong&gt;
-              &lt;span data-bind='text: string_of_html'&gt;&lt;/span&gt;
-            &lt;/p&gt;
-          </pre>
+          <pre>&lt;section id='simple-example-result'&gt;
+  &lt;textarea data-bind='tinymce: string_of_html'&gt;
+  &lt;p&gt;
+    &lt;strong&gt;Value:&lt;/strong&gt;
+    &lt;span data-bind='text: string_of_html'&gt;&lt;/span&gt;
+  &lt;/p&gt;
+&lt;/section&gt;</pre>
 
           <h3>Result:</h3>
-          <section class="result">
+          <section id='simple-example-result'>
+            <textarea id='string-of-html' class='form-control' data-bind="tinymce: string_of_html"></textarea>
             <div class="form-horizontal">
               <div class="form-group">
-                <label for="string-of-html" class="control-label col-sm-2">String of HTML</label>
-                <div class="col-sm-10">
-                  <textarea id='string-of-html' class='form-control' data-bind="tinymce: string_of_html"></textarea>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="control-label col-sm-2">Value</label>
-                <div class="col-sm-10">
+                <label class="control-label col-sm-3">Value</label>
+                <div class="col-sm-9">
                   <p class="form-control-static" data-bind="text: string_of_html"></p>
                 </div>
               </div>
               <div class="form-group">
-                <label class="control-label col-sm-2">Value (as html)</label>
-                <div class="col-sm-10">
+                <label class="control-label col-sm-3">Value (as html)</label>
+                <div class="col-sm-9">
+                  <p class="form-control-static" data-bind="html: string_of_html"></p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+      </div>
+      <div class='col-md-12'>
+
+        <h2><a href="#options-example" name="options-example">&sect;</a> Example with options</h2>
+        <section id="options-example-section">
+          <p>
+            You can also pass options via the <code>tinymceConfig</code> binding.
+          </p>
+
+          <label>View Model:</label>
+          <pre>window.view2 = {
+  string_of_html: ko.observable("&lt;strong&gt;click on me!&lt;/strong&gt;")
+};
+
+ko.applyBindings(view2, document.querySelector('#options-example-result'));</pre>
+
+          <label>Markup:</label>
+          <pre>&lt;section id='options-example-result'&gt;
+  &lt;div data-bind='tinymce: string_of_html, tinymceConfig: { inline: true }'&gt;&lt;div&gt;
+&lt;/section&gt;</pre>
+
+          <h3>Result:</h3>
+          <section id='options-example-result'>
+            <div data-bind="tinymce: string_of_html, tinymceConfig: { inline: true }"></div>
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label class="control-label col-sm-3">Value</label>
+                <div class="col-sm-9">
+                  <p class="form-control-static" data-bind="text: string_of_html"></p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-3">Value (as html)</label>
+                <div class="col-sm-9">
                   <p class="form-control-static" data-bind="html: string_of_html"></p>
                 </div>
               </div>
@@ -88,7 +128,7 @@
       </div>
     </div>
     <div class='footer'>
-      <p>&copy; Immense Networks 2014</p>
+      <p>&copy; Immense Networks 2016</p>
     </div>
   </div>
 </body>
