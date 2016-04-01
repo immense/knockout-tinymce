@@ -39,7 +39,6 @@
       if tinymce
         if tinymce.getContent() isnt value
           tinymce.setContent value
-          tinymce.execCommand "keyup"
       return
 
   configure = (defaults, extensions, options, args) ->
