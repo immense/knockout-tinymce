@@ -35,7 +35,6 @@
         if (tinymce) {
           if (tinymce.getContent() !== value) {
             tinymce.setContent(value);
-            tinymce.execCommand("keyup");
           }
         }
       }
