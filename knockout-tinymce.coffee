@@ -35,7 +35,12 @@
 
     update: (element, valueAccessor, allBindings, viewModel, bindingContext) ->
       tinymce = $(element).tinymce()
-      value = valueAccessor()()
+      # ko.unwrap makes sure that this works
+      # even if the given binding value is not an observable
+      value = ko.unwrap(valueAccessor())
+      # tiny mce crashes if value is null
+      if value == null
+        value = ""
       if tinymce
         if tinymce.getContent() isnt value
           tinymce.setContent value

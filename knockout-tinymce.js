@@ -31,7 +31,10 @@
       update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
         var tinymce, value;
         tinymce = $(element).tinymce();
-        value = valueAccessor()();
+        value = ko.unwrap(valueAccessor());
+        if (value === null) {
+          value = "";
+        }
         if (tinymce) {
           if (tinymce.getContent() !== value) {
             tinymce.setContent(value);
