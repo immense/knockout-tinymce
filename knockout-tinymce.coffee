@@ -7,7 +7,6 @@
     defaults: {}
     extensions: {}
     init: (element, valueAccessor, allBindings, viewModel, bindingContext) ->
-      throw "valueAccessor must be writeable and observable"  unless ko.isWriteableObservable(valueAccessor())
 
       # Get custom configuration object from the 'wysiwygConfig' binding, more settings here... http://www.tinymce.com/wiki.php/Configuration
       options = (if allBindings.has("tinymceConfig") then allBindings.get("tinymceConfig") else null)
@@ -17,7 +16,7 @@
       settings = configure(binding["defaults"], ext, options, arguments)
 
       # Ensure the valueAccessor's value has been applied to the underlying element, before instanciating the tinymce plugin
-      $(element)[if $(element).is('input, textarea') then 'text' else 'html'] valueAccessor()()
+      $(element)[if $(element).is('input, textarea') then 'text' else 'html'] ko.unwrap(valueAccessor())
 
       # Defer TinyMCE instantiation
       setTimeout (->
@@ -72,8 +71,8 @@
       # Ensure the valueAccessor state to achieve a realtime responsive UI.
       editor.on "change keyup nodechange", (e) ->
 
-        # Update the valueAccessor
-        args[1]() editor.getContent()
+        # Update the view model
+        ko.expressionRewriting.writeValueToProperty(args[1](), args[2], "tinymce", editor.getContent())
 
         # Run all applied extensions
         for name of extensions
@@ -99,5 +98,6 @@
 
   # Export the binding
   ko.bindingHandlers["tinymce"] = binding
+  ko.expressionRewriting.twoWayBindings["tinymce"] = true;
   return
 ) jQuery, ko
