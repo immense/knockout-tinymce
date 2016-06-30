@@ -45,6 +45,14 @@
           tinymce.setContent value
       return
 
+  writeValueToProperty = (property, allBindings, key, value, checkIfDifferent) -> 
+    if !property or !ko.isObservable property
+      propWriters = allBindings.get '_ko_property_writers'
+      propWriters[key](value) if propWriters && propWriters[key]
+    else if ko.isWriteableObservable(property) and (!checkIfDifferent or property.peek() != value)
+        property value
+    
+
   configure = (defaults, extensions, options, args) ->
 
     # Apply global configuration over TinyMCE defaults
@@ -72,7 +80,7 @@
       editor.on "change keyup nodechange", (e) ->
 
         # Update the view model
-        ko.expressionRewriting.writeValueToProperty(args[1](), args[2], "tinymce", editor.getContent())
+        writeValueToProperty(args[1](), args[2], "tinymce", editor.getContent())
 
         # Run all applied extensions
         for name of extensions
@@ -98,6 +106,6 @@
 
   # Export the binding
   ko.bindingHandlers["tinymce"] = binding
-  ko.expressionRewriting.twoWayBindings["tinymce"] = true;
+  ko.expressionRewriting._twoWayBindings["tinymce"] = true;
   return
 ) jQuery, ko
