@@ -79,13 +79,15 @@
       # Ensure the valueAccessor state to achieve a realtime responsive UI.
       editor.on "change keyup nodechange", (e) ->
 
-        # Update the view model
-        writeValueToProperty(args[1](), args[2], "tinymce", editor.getContent())
+        setTimeout (->
+          # Update the view model
+          writeValueToProperty(args[1](), args[2], "tinymce", editor.getContent())
 
-        # Run all applied extensions
-        for name of extensions
-          binding["extensions"][extensions[name]] editor, e, args[2], args[4]  if extensions.hasOwnProperty(name)
-        return
+          # Run all applied extensions
+          for name of extensions
+            binding["extensions"][extensions[name]] editor, e, args[2], args[4]  if extensions.hasOwnProperty(name)
+          return
+        ), 0
 
       return
 
