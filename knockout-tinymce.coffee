@@ -1,4 +1,5 @@
 (($, ko) ->
+  cache = ""
   binding =
     after: [
       "attr"
@@ -7,6 +8,7 @@
     defaults: {}
     extensions: {}
     init: (element, valueAccessor, allBindings, viewModel, bindingContext) ->
+      $element = $ element
 
       # Get custom configuration object from the 'wysiwygConfig' binding, more settings here... http://www.tinymce.com/wiki.php/Configuration
       options = (if allBindings.has("tinymceConfig") then allBindings.get("tinymceConfig") else null)
@@ -16,11 +18,11 @@
       settings = configure(binding["defaults"], ext, options, arguments)
 
       # Ensure the valueAccessor's value has been applied to the underlying element, before instanciating the tinymce plugin
-      $(element)[if $(element).is('input, textarea') then 'text' else 'html'] ko.unwrap(valueAccessor())
+      $element[if $element.is('input, textarea') then 'text' else 'html'] ko.unwrap(valueAccessor())
 
       # Defer TinyMCE instantiation
       setTimeout (->
-        $(element).tinymce settings
+        $element.tinymce settings
         return
       ), 0
 
@@ -40,7 +42,7 @@
       # tiny mce crashes if value is null
       if value == null
         value = ""
-      if tinymce
+      if tinymce and cache != value
         if tinymce.getContent() isnt value
           tinymce.setContent value
       return
@@ -80,8 +82,11 @@
       editor.on "change keyup nodechange", (e) ->
 
         setTimeout (->
+          value = editor.getContent()
+          cache = value
+          
           # Update the view model
-          writeValueToProperty(args[1](), args[2], "tinymce", editor.getContent())
+          writeValueToProperty args[1](), args[2], "tinymce", value
 
           # Run all applied extensions
           for name of extensions
