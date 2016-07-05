@@ -77,9 +77,10 @@
 
     # Define change handler
     applyChange = (editor) ->
+      throttle = if tinymce.util.Delay then tinymce.util.Delay.throttle else (cb) -> cb
 
       # Ensure the valueAccessor state to achieve a realtime responsive UI.
-      editor.on "change keyup nodechange", (e) ->
+      editor.on "change keyup nodechange", throttle((e) ->
 
         setTimeout (->
           value = editor.getContent()
@@ -93,6 +94,7 @@
             binding["extensions"][extensions[name]] editor, e, args[2], args[4]  if extensions.hasOwnProperty(name)
           return
         ), 0
+      , if args[2].has("throttleValueUpdate") then parseInt(args[2].get("throttleValueUpdate")) else 0)
 
       return
 
