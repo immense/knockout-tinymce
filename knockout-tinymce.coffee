@@ -1,5 +1,6 @@
 (($, ko) ->
   cache = ""
+  cacheInstance = null
   binding =
     after: [
       "attr"
@@ -30,6 +31,7 @@
       ko.utils["domNodeDisposal"].addDisposeCallback element, ->
         tinymce = $(element).tinymce()
         tinymce.remove() if tinymce
+        cacheInstance = null unless tinymce != cacheInstance
         return
 
       controlsDescendantBindings: true
@@ -42,7 +44,9 @@
       # tiny mce crashes if value is null
       if value == null
         value = ""
-      if tinymce and cache != value
+      if tinymce and cacheInstance == tinymce and cache != value
+        cacheInstance = tinymce
+        cache = value
         if tinymce.getContent() isnt value
           tinymce.setContent value
       return
@@ -84,6 +88,7 @@
         setTimeout (->
           value = editor.getContent()
           cache = value
+          cacheInstance = editor
           
           # Update the view model
           writeValueToProperty args[1](), args[2], "tinymce", value
