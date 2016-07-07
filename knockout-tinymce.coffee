@@ -44,7 +44,7 @@
       # tiny mce crashes if value is null
       if value == null
         value = ""
-      if tinymce and cacheInstance == tinymce and cache != value
+      if tinymce and not (cacheInstance == tinymce and cache == value)
         cacheInstance = tinymce
         cache = value
         if tinymce.getContent() isnt value
