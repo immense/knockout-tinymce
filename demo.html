@@ -7,27 +7,38 @@
   <link rel='stylesheet' type='text/css' href='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css'>
   <link rel="stylesheet" type='text/css' href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
   <script src='http://code.jquery.com/jquery-2.1.1.min.js'></script>
-  <script src='http://cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js'></script>
+  <script src='http://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js'></script>
 
   <script src='demo/tinymce/tinymce.js'></script>
   <script src='knockout-tinymce.min.js'></script>
   <link href='demo/style.css' type='text/css' rel='stylesheet'></link>
 
   <script type='text/javascript'>
+    function rebindView3() {
+      var element = document.querySelector('#example-3-result');
+      ko.cleanNode(element);
+      ko.applyBindings(view3, element);
+    }
     $(function() {
       // Example 1
       window.view1 = {
         string_of_html: ko.observable()
       };
 
-      ko.applyBindings(view1, document.querySelector('#simple-example-result'));
+      ko.applyBindings(view1, document.querySelector('#example-1-result'));
 
       // Example 2
       window.view2 = {
         string_of_html: ko.observable("<strong>click on me!</strong>")
       };
 
-      ko.applyBindings(view2, document.querySelector('#options-example-result'));
+      ko.applyBindings(view2, document.querySelector('#example-2-result'));
+
+      // Example 3
+      window.view3 = {
+        string_of_html: null
+      };
+      ko.applyBindings(view3, document.querySelector('#example-3-result'));
     });
   </script>
 </head>
@@ -44,8 +55,11 @@
       <h1>Knockout TinyMCE Demo</h1>
     </div>
     <div class='row'>
-      <div class='col-md-12'>
 
+      <!--
+        ### Example 1 ###
+      -->
+      <div class='col-md-12'>
         <h2><a href="#simple-example" name="simple-example">&sect;</a> Simple example</h2>
         <section id="simple-example-section">
           <p>Use the <code>tinymce</code> binding on any <code>textarea</code> element.</p>
@@ -55,15 +69,15 @@
   string_of_html: ko.observable()
 };
 
-ko.applyBindings(view1, document.querySelector('#simple-example-result'));</pre>
+ko.applyBindings(view1, document.querySelector('#example-1-result'));</pre>
 
           <label>Markup:</label>
-          <pre>&lt;section id='simple-example-result'&gt;
+          <pre>&lt;section id='example-1-result'&gt;
   &lt;textarea data-bind='tinymce: string_of_html'&gt;
 &lt;/section&gt;</pre>
 
           <h3>Result:</h3>
-          <section id='simple-example-result'>
+          <section id='example-1-result'>
             <textarea id='string-of-html' class='form-control' data-bind="tinymce: string_of_html"></textarea>
             <div class="form-horizontal">
               <div class="form-group">
@@ -82,8 +96,11 @@ ko.applyBindings(view1, document.querySelector('#simple-example-result'));</pre>
           </section>
         </section>
       </div>
-      <div class='col-md-12'>
 
+      <!--
+        ### Example 2 ###
+      -->
+      <div class='col-md-12'>
         <h2><a href="#options-example" name="options-example">&sect;</a> Example with options</h2>
         <section id="options-example-section">
           <p>
@@ -95,16 +112,64 @@ ko.applyBindings(view1, document.querySelector('#simple-example-result'));</pre>
   string_of_html: ko.observable("&lt;strong&gt;click on me!&lt;/strong&gt;")
 };
 
-ko.applyBindings(view2, document.querySelector('#options-example-result'));</pre>
+ko.applyBindings(view2, document.querySelector('#example-2-result'));</pre>
 
           <label>Markup:</label>
-          <pre>&lt;section id='options-example-result'&gt;
+          <pre>&lt;section id='example-2-result'&gt;
   &lt;div data-bind='tinymce: string_of_html, tinymceConfig: { inline: true }'&gt;&lt;div&gt;
 &lt;/section&gt;</pre>
 
           <h3>Result:</h3>
-          <section id='options-example-result'>
+          <section id='example-2-result'>
             <div data-bind="tinymce: string_of_html, tinymceConfig: { inline: true }"></div>
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label class="control-label col-sm-3">Value</label>
+                <div class="col-sm-9">
+                  <p class="form-control-static" data-bind="text: string_of_html"></p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-3">Value (as html)</label>
+                <div class="col-sm-9">
+                  <p class="form-control-static" data-bind="html: string_of_html"></p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+      </div>
+
+      <!--
+        ### Example 3 ###
+      -->
+      <div class='col-md-12'>
+        <h2><a href="#non-observable-binding" name="non-observable-binding">&sect;</a> Example with non-observable</h2>
+        <section id="non-observable-binding-section">
+          <p>
+            The <code>tynemce</code> binding can also bind to non-observable properties.
+          </p>
+
+          <label>View Model:</label>
+          <pre>window.view3 = {
+  string_of_html: null
+};
+
+ko.applyBindings(view3, document.querySelector('#example-3-result'));</pre>
+
+          <label>Markup:</label>
+          <pre>&lt;section id='example-3-result'&gt;
+  &lt;div data-bind='tinymce: string_of_html'&gt;&lt;div&gt;
+&lt;/section&gt;</pre>
+
+          <label>Note:</label>
+          <p>
+            Because <code>view3.string_of_html</code> is not observable, the displayed value won't update automatically, so you'll need to <button type="button" class="btn btn-xs btn-info" onclick="rebindView3()">rebind view3</button> to update the value (unless you use something like <a href="http://blog.stevensanderson.com/2013/05/20/knockout-es5-a-plugin-to-simplify-your-syntax/">Knockout-ES5</a>).
+          </p>
+
+          <h3>Result:</h3>
+          <section id='example-3-result'>
+            <div data-bind="tinymce: string_of_html"></div>
             <div class="form-horizontal">
               <div class="form-group">
                 <label class="control-label col-sm-3">Value</label>
