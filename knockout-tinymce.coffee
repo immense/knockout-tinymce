@@ -1,4 +1,6 @@
 (($, ko) ->
+  cache = ""
+  cacheInstance = null
   binding =
     after: [
       "attr"
@@ -7,7 +9,7 @@
     defaults: {}
     extensions: {}
     init: (element, valueAccessor, allBindings, viewModel, bindingContext) ->
-      throw "valueAccessor must be writeable and observable"  unless ko.isWriteableObservable(valueAccessor())
+      $element = $ element
 
       # Get custom configuration object from the 'wysiwygConfig' binding, more settings here... http://www.tinymce.com/wiki.php/Configuration
       options = (if allBindings.has("tinymceConfig") then allBindings.get("tinymceConfig") else null)
@@ -17,11 +19,11 @@
       settings = configure(binding["defaults"], ext, options, arguments)
 
       # Ensure the valueAccessor's value has been applied to the underlying element, before instanciating the tinymce plugin
-      $(element)[if $(element).is('input, textarea') then 'text' else 'html'] valueAccessor()()
+      $element[if $element.is('input, textarea') then 'text' else 'html'] ko.unwrap(valueAccessor())
 
       # Defer TinyMCE instantiation
       setTimeout (->
-        $(element).tinymce settings
+        $element.tinymce settings
         return
       ), 0
 
@@ -29,6 +31,7 @@
       ko.utils["domNodeDisposal"].addDisposeCallback element, ->
         tinymce = $(element).tinymce()
         tinymce.remove() if tinymce
+        cacheInstance = null unless tinymce != cacheInstance
         return
 
       controlsDescendantBindings: true
@@ -41,10 +44,20 @@
       # tiny mce crashes if value is null
       if value == null
         value = ""
-      if tinymce
+      if tinymce and not (cacheInstance == tinymce and cache == value)
+        cacheInstance = tinymce
+        cache = value
         if tinymce.getContent() isnt value
           tinymce.setContent value
       return
+
+  writeValueToProperty = (property, allBindings, key, value, checkIfDifferent) -> 
+    if !property or !ko.isObservable property
+      propWriters = allBindings.get '_ko_property_writers'
+      propWriters[key](value) if propWriters && propWriters[key]
+    else if ko.isWriteableObservable(property) and (!checkIfDifferent or property.peek() != value)
+        property value
+    
 
   configure = (defaults, extensions, options, args) ->
 
@@ -72,13 +85,19 @@
       # Ensure the valueAccessor state to achieve a realtime responsive UI.
       editor.on "change keyup nodechange", (e) ->
 
-        # Update the valueAccessor
-        args[1]() editor.getContent()
+        setTimeout (->
+          value = editor.getContent()
+          cache = value
+          cacheInstance = editor
+          
+          # Update the view model
+          writeValueToProperty args[1](), args[2], "tinymce", value
 
-        # Run all applied extensions
-        for name of extensions
-          binding["extensions"][extensions[name]] editor, e, args[2], args[4]  if extensions.hasOwnProperty(name)
-        return
+          # Run all applied extensions
+          for name of extensions
+            binding["extensions"][extensions[name]] editor, e, args[2], args[4]  if extensions.hasOwnProperty(name)
+          return
+        ), 0
 
       return
 
@@ -99,5 +118,6 @@
 
   # Export the binding
   ko.bindingHandlers["tinymce"] = binding
+  ko.expressionRewriting._twoWayBindings["tinymce"] = true;
   return
 ) jQuery, ko
