@@ -1,27 +1,30 @@
 (function() {
   (function($, ko) {
-    var binding, configure;
+    var binding, cache, cacheInstance, configure, writeValueToProperty;
+    cache = "";
+    cacheInstance = null;
     binding = {
       after: ["attr", "value"],
       defaults: {},
       extensions: {},
       init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-        var ext, options, settings;
-        if (!ko.isWriteableObservable(valueAccessor())) {
-          throw "valueAccessor must be writeable and observable";
-        }
+        var $element, ext, options, settings;
+        $element = $(element);
         options = (allBindings.has("tinymceConfig") ? allBindings.get("tinymceConfig") : null);
         ext = (allBindings.has("tinymceExtensions") ? allBindings.get("tinymceExtensions") : []);
         settings = configure(binding["defaults"], ext, options, arguments);
-        $(element)[$(element).is('input, textarea') ? 'text' : 'html'](valueAccessor()());
+        $element[$element.is('input, textarea') ? 'text' : 'html'](ko.unwrap(valueAccessor()));
         setTimeout((function() {
-          $(element).tinymce(settings);
+          $element.tinymce(settings);
         }), 0);
         ko.utils["domNodeDisposal"].addDisposeCallback(element, function() {
           var tinymce;
           tinymce = $(element).tinymce();
           if (tinymce) {
             tinymce.remove();
+          }
+          if (tinymce === cacheInstance) {
+            cacheInstance = null;
           }
         });
         return {
@@ -35,11 +38,24 @@
         if (value === null) {
           value = "";
         }
-        if (tinymce) {
+        if (tinymce && !(cacheInstance === tinymce && cache === value)) {
+          cacheInstance = tinymce;
+          cache = value;
           if (tinymce.getContent() !== value) {
             tinymce.setContent(value);
           }
         }
+      }
+    };
+    writeValueToProperty = function(property, allBindings, key, value, checkIfDifferent) {
+      var propWriters;
+      if (!property || !ko.isObservable(property)) {
+        propWriters = allBindings.get('_ko_property_writers');
+        if (propWriters && propWriters[key]) {
+          return propWriters[key](value);
+        }
+      } else if (ko.isWriteableObservable(property) && (!checkIfDifferent || property.peek() !== value)) {
+        return property(value);
       }
     };
     configure = function(defaults, extensions, options, args) {
@@ -65,13 +81,18 @@
       }
       applyChange = function(editor) {
         editor.on("change keyup nodechange", function(e) {
-          var name;
-          args[1]()(editor.getContent());
-          for (name in extensions) {
-            if (extensions.hasOwnProperty(name)) {
-              binding["extensions"][extensions[name]](editor, e, args[2], args[4]);
+          return setTimeout((function() {
+            var name, value;
+            value = editor.getContent();
+            cache = value;
+            cacheInstance = editor;
+            writeValueToProperty(args[1](), args[2], "tinymce", value);
+            for (name in extensions) {
+              if (extensions.hasOwnProperty(name)) {
+                binding["extensions"][extensions[name]](editor, e, args[2], args[4]);
+              }
             }
-          }
+          }), 0);
         });
       };
       if (typeof config["setup"] === "function") {
@@ -86,6 +107,7 @@
       return config;
     };
     ko.bindingHandlers["tinymce"] = binding;
+    ko.expressionRewriting._twoWayBindings["tinymce"] = true;
   })(jQuery, ko);
 
 }).call(this);
