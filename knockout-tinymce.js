@@ -83,6 +83,9 @@
         editor.on("change keyup nodechange", function(e) {
           return setTimeout((function() {
             var name, value;
+            if (editor.destroyed) {
+              return;
+            }
             value = editor.getContent();
             cache = value;
             cacheInstance = editor;
