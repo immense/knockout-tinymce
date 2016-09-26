@@ -86,6 +86,7 @@
       editor.on "change keyup nodechange", (e) ->
 
         setTimeout (->
+          return if editor.destroyed
           value = editor.getContent()
           cache = value
           cacheInstance = editor
